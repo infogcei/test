@@ -781,7 +781,7 @@
     </div>
 
     <script>
-        // ✅ Google Script URL - NEW SCRIPT URL YAHAN DALEN
+        // ✅ Google Script URL - APNA SCRIPT URL YAHAN DALEN
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwtpC_KpZNknSFQ5zmYEHmgTQ2B2d5hvb6xOmt0wZqXbzBZSyHvdutYeeT7smx03DeS5g/exec';
 
         // Show status message
@@ -954,7 +954,7 @@
             return re.test(email);
         }
 
-        // File to Base64 converter function - NAYA FUNCTION
+        // File to Base64 converter function
         function fileToBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -1004,27 +1004,30 @@
                     registrationFee: '99'
                 };
 
+                console.log('📤 Sending data to Google Sheets:', submissionData);
+                console.log('📮 Google Script URL:', GOOGLE_SCRIPT_URL);
+
                 // Add files to submission data if they exist
                 if (photoFile) {
                     const photoBase64 = await fileToBase64(photoFile);
                     submissionData.photoData = photoBase64;
                     submissionData.photoName = photoFile.name;
+                    console.log('✅ Photo file prepared for upload');
                 }
                 
                 if (aadharFile) {
                     const aadharBase64 = await fileToBase64(aadharFile);
                     submissionData.aadharData = aadharBase64;
                     submissionData.aadharName = aadharFile.name;
+                    console.log('✅ Aadhar file prepared for upload');
                 }
                 
                 if (marksheetFile) {
                     const marksheetBase64 = await fileToBase64(marksheetFile);
                     submissionData.marksheetData = marksheetBase64;
                     submissionData.marksheetName = marksheetFile.name;
+                    console.log('✅ Marksheet file prepared for upload');
                 }
-
-                console.log('📤 Sending data to Google Sheets:', submissionData);
-                console.log('📮 Google Script URL:', GOOGLE_SCRIPT_URL);
 
                 const response = await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
@@ -1056,9 +1059,15 @@
 
                 if (result.status === 'success') {
                     console.log('✅ Server confirmed success');
-                    submissionData.studentId = result.studentId;
-                    showSuccessPage(submissionData);
-                    showStatus('✅ Data and files successfully saved to Google Sheets!', 'success');
+                    showSuccessPage({
+                        studentId: result.studentId,
+                        fullName: submissionData.fullName,
+                        course: submissionData.course,
+                        batchTime: submissionData.batchTime,
+                        mobile: submissionData.mobile,
+                        timestamp: submissionData.timestamp
+                    });
+                    showStatus('✅ Form submitted successfully! Data saved to Google Sheets and Drive.', 'success');
                 } else {
                     throw new Error(result.message || 'Server returned error status');
                 }
@@ -1084,11 +1093,15 @@
                 const tempId = `GCEI-${currentYear}-${fallbackCounter}`;
                 localStorage.setItem('fallbackCounter', fallbackCounter.toString());
                 
-                formData.studentId = tempId;
-                formData.timestamp = new Date().toLocaleString('hi-IN');
-                
-                showSuccessPage(formData);
-                showStatus('⚠️ Form submitted (local fallback). Files not saved.', 'error');
+                showSuccessPage({
+                    studentId: tempId,
+                    fullName: formData.fullName,
+                    course: formData.course,
+                    batchTime: formData.batchTime,
+                    mobile: formData.mobile,
+                    timestamp: new Date().toLocaleString('hi-IN')
+                });
+                showStatus('⚠️ Form submitted (local fallback). Check internet connection.', 'error');
                 
                 console.log('🔄 Using fallback ID:', tempId);
             } finally {
@@ -1242,6 +1255,12 @@
         const today = new Date();
         const maxDate = new Date(today.getFullYear() - 10, today.getMonth(), today.getDate());
         dobInput.max = maxDate.toISOString().split('T')[0];
+
+        // Test API connection on page load
+        window.addEventListener('load', function() {
+            console.log('🎓 GCEI Admission Form Loaded');
+            console.log('🔗 Script URL:', GOOGLE_SCRIPT_URL);
+        });
     </script>
 </body>
 </html>
