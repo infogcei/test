@@ -782,7 +782,7 @@
 
     <script>
         // ✅ YOUR GOOGLE SCRIPT URL
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxZ6c9JjB3gCP1sySbAn1md1jnXLOLmtmggcaFzCb4TflGy_bKWQ7VoRerRTQuRDRRF5g/exec';
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx3xQLgV1h7HRZTSdGQ8g7H9lhEvKye5-HZiANUz7F4l6LFeoZyxsjrJ0_RKhL0sJY66A/exec';
 
         // Show status message
         function showStatus(message, type) {
@@ -954,7 +954,7 @@
             return re.test(email);
         }
 
-        // ✅ FIXED SUBMISSION FUNCTION - CORS ISSUE SOLVED
+        // ✅ FIXED SUBMISSION FUNCTION - WORKING VERSION
         async function submitToGoogleSheets() {
             console.log('=== FORM SUBMISSION STARTED ===');
             document.getElementById('loadingSpinner').style.display = 'block';
@@ -988,17 +988,18 @@
                 };
 
                 console.log('📤 Sending data to Google Sheets:', submissionData);
-                console.log('📮 Google Script URL:', GOOGLE_SCRIPT_URL);
 
-                // ✅ FIXED: Using FormData to avoid CORS issues
-                const formDataToSend = new FormData();
-                for (const key in submissionData) {
-                    formDataToSend.append(key, submissionData[key]);
-                }
+                // ✅ FIXED: Using URL encoded form data
+                const formDataString = Object.keys(submissionData)
+                    .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(submissionData[key]))
+                    .join('&');
 
                 const response = await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
-                    body: formDataToSend
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: formDataString
                 });
 
                 console.log('📥 Response status:', response.status);
@@ -1243,11 +1244,6 @@
         window.addEventListener('load', function() {
             console.log('🎓 GCEI Admission Form Loaded');
             console.log('🔗 Script URL:', GOOGLE_SCRIPT_URL);
-            
-            // Test connection after 2 seconds
-            setTimeout(() => {
-                testConnection();
-            }, 2000);
         });
     </script>
 </body>
