@@ -543,8 +543,10 @@
     <div class="container">
         <header>
             <div class="institute-name">Guru Computer Education Institute</div>
-            <div class="address">Near Police Station, Dagori Road, Bilha, Bilaspur (C.G.)</div>
-            <div class="contact">Phone: 9244240484</div>
+            <!-- ✅ SETUP HERE ✅ - 1. अपना पता बदलें -->
+            <div class="address" id="instituteAddress">Near Police Station, Dagori Road, Bilha, Bilaspur (C.G.)</div>
+            <!-- ✅ SETUP HERE ✅ - 2. अपना मोबाइल नंबर बदलें -->
+            <div class="contact" id="institutePhone">Phone: 9244240484</div>
         </header>
 
         <!-- Welcome Message -->
@@ -690,6 +692,7 @@
                         </div>
                     </div>
                     
+                    <!-- ✅ SETUP HERE ✅ - 3. अपना UPI ID बदलें -->
                     <div class="upi-id" id="upiIdDisplay">
                         UPI ID: 8349902843@ybl
                     </div>
@@ -740,7 +743,7 @@
         </div>
 
         <!-- Success Message -->
-        <div class="success-message hindi-text" id="successMessage">
+        <div class="success-message" id="successMessage">
             <div class="success-icon">✓</div>
             <h2>Form Submitted Successfully!</h2>
             <p>धन्यवाद! आपका फॉर्म सफलतापूर्वक जमा हो गया है।</p>
@@ -798,6 +801,7 @@
 
             <div class="footer-note">
                 <div class="tagline">Guru Ke Saath Gyan, Safalta Ki Pehchan</div>
+                <!-- ✅ SETUP HERE ✅ - 4. अपना WhatsApp नंबर बदलें (WhatsApp बटन के लिए) -->
                 <strong>Contact: 9244240484 (Vani)</strong><br>
                 <small style="opacity: 0.8; font-weight: normal;">आपकी जानकारी सुरक्षित रूप से हमारे सिस्टम में सेव हो गई है</small>
             </div>
@@ -805,9 +809,40 @@
     </div>
 
     <script>
-        // ✅ YOUR GOOGLE SCRIPT URL
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwI_7ZSsBoRdG7IW08QxPB6a8Lv5cgiY3EX884UM8OmyW9hS4xepIJATYRaydeT3YzxfA/exec';
-
+        // ======================================================
+        // ✅ SETUP SECTION - यहाँ आपको अपनी जानकारी डालनी है
+        // ======================================================
+        
+        // ✅ 1. GOOGLE SHEET URL (Google Apps Script Web App URL)
+        // इसे बदलें: अपना Google Apps Script Web App URL यहाँ डालें
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwHIv-A42wSJZ_xWUH_Q7BI5hv9tat9XofZzkD_RhTgnwVSYoVQpvFneYqDh04i-uvGXw/exec';
+        
+        // ✅ 2. GOOGLE SHEET NAME (अगर आपके शीट का नाम अलग है तो बदलें)
+        const GOOGLE_SHEET_NAME = 'Admissions'; // Default sheet name
+        
+        // ✅ 3. GOOGLE DRIVE FOLDER ID (अगर आप फाइलें सेव करना चाहते हैं)
+        // अपना Google Drive Folder ID यहाँ डालें (Optional)
+        const GOOGLE_DRIVE_FOLDER_ID = 'https://drive.google.com/drive/folders/1vZ350XN_8-i4y2JsodxSjsZm5dKUqvXt?usp=drive_link'; // Leave empty if not using
+        
+        // ✅ 4. INSTITUTE DETAILS (ये HTML में भी सेट हैं, लेकिन यहाँ भी बदल सकते हैं)
+        const INSTITUTE_DETAILS = {
+            name: 'Guru Computer Education Institute',
+            address: 'Near Police Station, Dagori Road, Bilha, Bilaspur (C.G.)',
+            phone: '9244240484',
+            whatsapp: '9244240484', // WhatsApp के लिए अलग नंबर अगर है
+            upiId: '8349902843@ybl',
+            registrationFee: '99'
+        };
+        
+        // ======================================================
+        // END OF SETUP SECTION - यहाँ से आगे कोड एडिट न करें
+        // ======================================================
+        
+        // Update HTML with institute details
+        document.getElementById('instituteAddress').textContent = INSTITUTE_DETAILS.address;
+        document.getElementById('institutePhone').textContent = `Phone: ${INSTITUTE_DETAILS.phone}`;
+        document.getElementById('upiIdDisplay').textContent = `UPI ID: ${INSTITUTE_DETAILS.upiId}`;
+        
         // Show status message
         function showStatus(message, type) {
             const statusEl = document.getElementById('statusMessage');
@@ -1034,9 +1069,13 @@
             }
         }
 
-        // ✅ FIXED SUBMISSION FUNCTION - CORS ISSUE SOLVED
+        // ✅ SUBMISSION FUNCTION
         async function submitToGoogleSheets() {
             console.log('=== FORM SUBMISSION STARTED ===');
+            console.log('📮 Google Script URL:', GOOGLE_SCRIPT_URL);
+            console.log('📋 Google Sheet Name:', GOOGLE_SHEET_NAME);
+            console.log('📁 Google Drive Folder ID:', GOOGLE_DRIVE_FOLDER_ID || 'Not set');
+            
             setLoadingState(true);
 
             try {
@@ -1048,6 +1087,7 @@
                 
                 // Prepare submission data
                 const submissionData = {
+                    // ✅ Google Sheets में सेव होने वाली जानकारी
                     timestamp: new Date().toLocaleString('hi-IN'),
                     fullName: formData.fullName,
                     fatherName: formData.fatherName,
@@ -1062,17 +1102,31 @@
                     batchTime: formData.batchTime,
                     paymentMethod: paymentMethod,
                     transactionId: transactionId,
-                    registrationFee: '99'
+                    registrationFee: INSTITUTE_DETAILS.registrationFee,
+                    
+                    // ✅ Additional info for Google Script
+                    action: 'submitAdmission',
+                    sheetName: GOOGLE_SHEET_NAME,
+                    folderId: GOOGLE_DRIVE_FOLDER_ID,
+                    instituteName: INSTITUTE_DETAILS.name
                 };
 
                 console.log('📤 Sending data to Google Sheets:', submissionData);
-                console.log('📮 Google Script URL:', GOOGLE_SCRIPT_URL);
 
-                // ✅ FIXED: Using FormData to avoid CORS issues
+                // ✅ Using FormData to avoid CORS issues
                 const formDataToSend = new FormData();
                 for (const key in submissionData) {
                     formDataToSend.append(key, submissionData[key]);
                 }
+
+                // Add files if you want to upload them
+                const photoFile = document.getElementById('photo').files[0];
+                const aadharFile = document.getElementById('aadharCard').files[0];
+                const marksheetFile = document.getElementById('marksheet').files[0];
+                
+                if (photoFile) formDataToSend.append('photoFile', photoFile);
+                if (aadharFile) formDataToSend.append('aadharFile', aadharFile);
+                if (marksheetFile) formDataToSend.append('marksheetFile', marksheetFile);
 
                 const response = await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
@@ -1080,7 +1134,6 @@
                 });
 
                 console.log('📥 Response status:', response.status);
-                console.log('📥 Response ok:', response.ok);
 
                 if (!response.ok) {
                     throw new Error(`Server returned ${response.status}: ${response.statusText}`);
@@ -1102,7 +1155,7 @@
                 if (result.status === 'success') {
                     console.log('✅ Server confirmed success');
                     showSuccessPage({
-                        studentId: result.studentId,
+                        studentId: result.studentId || generateStudentId(),
                         fullName: submissionData.fullName,
                         course: submissionData.course,
                         batchTime: submissionData.batchTime,
@@ -1124,6 +1177,7 @@
                     <strong>Message:</strong> ${error.message}<br>
                     <strong>Time:</strong> ${new Date().toLocaleString()}<br>
                     <strong>Script URL:</strong> ${GOOGLE_SCRIPT_URL}<br>
+                    <strong>Sheet Name:</strong> ${GOOGLE_SHEET_NAME}<br>
                     <button onclick="testConnection()" style="padding: 8px 15px; background: #007cba; color: white; border: none; border-radius: 5px; cursor: pointer; margin: 5px;">Test Connection</button>
                     <button onclick="showFallback()" style="padding: 8px 15px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; margin: 5px;">Use Fallback</button>
                 `;
@@ -1133,11 +1187,18 @@
             }
         }
 
+        // Generate student ID if not provided by server
+        function generateStudentId() {
+            const currentYear = new Date().getFullYear();
+            const randomNum = Math.floor(Math.random() * 10000);
+            return `GCEI-${currentYear}-${randomNum}`;
+        }
+
         // ✅ TEST CONNECTION FUNCTION
         async function testConnection() {
             try {
                 console.log('🔗 Testing connection to:', GOOGLE_SCRIPT_URL);
-                const response = await fetch(GOOGLE_SCRIPT_URL);
+                const response = await fetch(GOOGLE_SCRIPT_URL + '?test=true');
                 const result = await response.text();
                 
                 document.getElementById('debugInfo').innerHTML += `<br><br><strong>Connection Test Result:</strong><br>${result}`;
@@ -1230,13 +1291,13 @@
             doc.setTextColor(26, 42, 108);
             
             // Institute Name
-            doc.text("Guru Computer Education Institute", 105, 20, { align: "center" });
+            doc.text(INSTITUTE_DETAILS.name, 105, 20, { align: "center" });
             
             doc.setFontSize(12);
             doc.setTextColor(0, 0, 0);
             doc.setFont("helvetica", "normal");
-            doc.text("Near Police Station, Dagori Road, Bilha, Bilaspur (C.G.)", 105, 28, { align: "center" });
-            doc.text("Phone: 9244240484", 105, 34, { align: "center" });
+            doc.text(INSTITUTE_DETAILS.address, 105, 28, { align: "center" });
+            doc.text(`Phone: ${INSTITUTE_DETAILS.phone}`, 105, 34, { align: "center" });
             
             // Title
             doc.setFontSize(18);
@@ -1264,12 +1325,12 @@
             
             // Payment Information
             doc.setFont("helvetica", "bold");
-            doc.text("Registration Fee: ₹99", 20, 140);
+            doc.text(`Registration Fee: ₹${INSTITUTE_DETAILS.registrationFee}`, 20, 140);
             
             // Instructions
             doc.setFontSize(10);
             doc.text("Next Steps:", 20, 160);
-            doc.text("1. Pay ₹99 registration fee (UPI or at institute)", 20, 170);
+            doc.text(`1. Pay ₹${INSTITUTE_DETAILS.registrationFee} registration fee (UPI or at institute)`, 20, 170);
             doc.text("2. Our team will contact you within 24 hours", 20, 180);
             doc.text("3. Bring original documents to institute", 20, 190);
             doc.text("4. Complete admission process", 20, 200);
@@ -1281,7 +1342,7 @@
             doc.text("Guru Ke Saath Gyan, Safalta Ki Pehchan", 105, 240, { align: "center" });
             
             // Save the PDF
-            doc.save(`GCEI_Admission_${studentId}.pdf`);
+            doc.save(`${INSTITUTE_DETAILS.name.replace(/\s+/g, '_')}_Admission_${studentId}.pdf`);
         }
 
         // WhatsApp button functionality
@@ -1292,9 +1353,9 @@
             const batchTime = document.getElementById('successBatchTime').textContent;
             const mobile = document.getElementById('successMobile').textContent;
             
-            const message = `Namaste! Main ${studentName} hun. Maine Guru Computer Education Institute mein ${course} ke liye admission form submit kiya hai. Batch timing: ${batchTime}. Kripya meri admission process complete karne mein madad karein.\n\nForm details:\n- Name: ${studentName}\n- Student ID: ${studentId}\n- Course: ${course}\n- Batch: ${batchTime}\n- Mobile: ${mobile}\n\nPlease download the PDF form and send it via WhatsApp`;
+            const message = `Namaste! Main ${studentName} hun. Maine ${INSTITUTE_DETAILS.name} mein ${course} ke liye admission form submit kiya hai. Batch timing: ${batchTime}. Kripya meri admission process complete karne mein madad karein.\n\nForm details:\n- Name: ${studentName}\n- Student ID: ${studentId}\n- Course: ${course}\n- Batch: ${batchTime}\n- Mobile: ${mobile}\n\nPlease download the PDF form and send it via WhatsApp`;
             
-            const whatsappUrl = `https://wa.me/919244240484?text=${encodeURIComponent(message)}`;
+            const whatsappUrl = `https://wa.me/91${INSTITUTE_DETAILS.whatsapp}?text=${encodeURIComponent(message)}`;
             window.open(whatsappUrl, '_blank');
         });
 
@@ -1315,6 +1376,9 @@
         window.addEventListener('load', function() {
             console.log('🎓 GCEI Admission Form Loaded');
             console.log('🔗 Script URL:', GOOGLE_SCRIPT_URL);
+            console.log('📋 Sheet Name:', GOOGLE_SHEET_NAME);
+            console.log('📁 Drive Folder ID:', GOOGLE_DRIVE_FOLDER_ID || 'Not set');
+            console.log('🏢 Institute:', INSTITUTE_DETAILS.name);
             
             // Test connection after 2 seconds
             setTimeout(() => {
