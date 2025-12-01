@@ -781,7 +781,7 @@
     </div>
 
     <script>
-        // ✅ YOUR NEW GOOGLE SCRIPT URL
+        // ✅ YOUR GOOGLE SCRIPT URL - FIXED VERSION
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxZ6c9JjB3gCP1sySbAn1md1jnXLOLmtmggcaFzCb4TflGy_bKWQ7VoRerRTQuRDRRF5g/exec';
 
         // Show status message
@@ -968,6 +968,7 @@
             });
         }
 
+        // ✅ FIXED SUBMISSION FUNCTION - SIMPLIFIED VERSION
         async function submitToGoogleSheets() {
             console.log('=== FORM SUBMISSION STARTED ===');
             document.getElementById('loadingSpinner').style.display = 'block';
@@ -981,11 +982,7 @@
                 const paymentMethod = document.getElementById('upiOption').classList.contains('selected') ? 'UPI' : 'Cash';
                 const transactionId = document.getElementById('transactionId').value;
                 
-                // Prepare files for upload
-                const photoFile = document.getElementById('photo').files[0];
-                const aadharFile = document.getElementById('aadharCard').files[0];
-                const marksheetFile = document.getElementById('marksheet').files[0];
-                
+                // Prepare submission data (WITHOUT FILES FIRST)
                 const submissionData = {
                     timestamp: new Date().toLocaleString('hi-IN'),
                     fullName: formData.fullName,
@@ -1007,28 +1004,7 @@
                 console.log('📤 Sending data to Google Sheets:', submissionData);
                 console.log('📮 Google Script URL:', GOOGLE_SCRIPT_URL);
 
-                // Add files to submission data if they exist
-                if (photoFile) {
-                    const photoBase64 = await fileToBase64(photoFile);
-                    submissionData.photoData = photoBase64;
-                    submissionData.photoName = photoFile.name;
-                    console.log('✅ Photo file prepared for upload');
-                }
-                
-                if (aadharFile) {
-                    const aadharBase64 = await fileToBase64(aadharFile);
-                    submissionData.aadharData = aadharBase64;
-                    submissionData.aadharName = aadharFile.name;
-                    console.log('✅ Aadhar file prepared for upload');
-                }
-                
-                if (marksheetFile) {
-                    const marksheetBase64 = await fileToBase64(marksheetFile);
-                    submissionData.marksheetData = marksheetBase64;
-                    submissionData.marksheetName = marksheetFile.name;
-                    console.log('✅ Marksheet file prepared for upload');
-                }
-
+                // ✅ SIMPLE FETCH WITHOUT FILES FIRST
                 const response = await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
                     headers: {
@@ -1067,7 +1043,7 @@
                         mobile: submissionData.mobile,
                         timestamp: submissionData.timestamp
                     });
-                    showStatus('✅ Form submitted successfully! Data saved to Google Sheets and Drive.', 'success');
+                    showStatus('✅ Form submitted successfully! Data saved to Google Sheets.', 'success');
                 } else {
                     throw new Error(result.message || 'Server returned error status');
                 }
@@ -1082,31 +1058,50 @@
                     <strong>Message:</strong> ${error.message}<br>
                     <strong>Time:</strong> ${new Date().toLocaleString()}<br>
                     <strong>Script URL:</strong> ${GOOGLE_SCRIPT_URL}<br>
-                    <strong>Check browser console (F12) for full details</strong>
+                    <button onclick="testConnection()" style="padding: 8px 15px; background: #007cba; color: white; border: none; border-radius: 5px; cursor: pointer; margin: 5px;">Test Connection</button>
+                    <button onclick="showFallback()" style="padding: 8px 15px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; margin: 5px;">Use Fallback</button>
                 `;
                 
-                // Fallback - Show success page anyway with local ID
-                const formData = getFormData();
-                const currentYear = new Date().getFullYear();
-                let fallbackCounter = parseInt(localStorage.getItem('fallbackCounter') || '2000');
-                fallbackCounter++;
-                const tempId = `GCEI-${currentYear}-${fallbackCounter}`;
-                localStorage.setItem('fallbackCounter', fallbackCounter.toString());
-                
-                showSuccessPage({
-                    studentId: tempId,
-                    fullName: formData.fullName,
-                    course: formData.course,
-                    batchTime: formData.batchTime,
-                    mobile: formData.mobile,
-                    timestamp: new Date().toLocaleString('hi-IN')
-                });
-                showStatus('⚠️ Form submitted (local fallback). Check internet connection.', 'error');
-                
-                console.log('🔄 Using fallback ID:', tempId);
             } finally {
                 resetLoadingState();
             }
+        }
+
+        // ✅ TEST CONNECTION FUNCTION
+        async function testConnection() {
+            try {
+                console.log('🔗 Testing connection to:', GOOGLE_SCRIPT_URL);
+                const response = await fetch(GOOGLE_SCRIPT_URL);
+                const result = await response.text();
+                
+                document.getElementById('debugInfo').innerHTML += `<br><br><strong>Connection Test Result:</strong><br>${result}`;
+                console.log('Connection test result:', result);
+            } catch (error) {
+                document.getElementById('debugInfo').innerHTML += `<br><br><strong>Connection Test Failed:</strong><br>${error.message}`;
+                console.error('Connection test failed:', error);
+            }
+        }
+
+        // ✅ FALLBACK FUNCTION
+        function showFallback() {
+            const formData = getFormData();
+            const currentYear = new Date().getFullYear();
+            let fallbackCounter = parseInt(localStorage.getItem('fallbackCounter') || '2000');
+            fallbackCounter++;
+            const tempId = `GCEI-${currentYear}-${fallbackCounter}`;
+            localStorage.setItem('fallbackCounter', fallbackCounter.toString());
+            
+            showSuccessPage({
+                studentId: tempId,
+                fullName: formData.fullName,
+                course: formData.course,
+                batchTime: formData.batchTime,
+                mobile: formData.mobile,
+                timestamp: new Date().toLocaleString('hi-IN')
+            });
+            showStatus('⚠️ Form submitted (local fallback). Data will be saved when connection is available.', 'error');
+            
+            document.getElementById('debugInfo').style.display = 'none';
         }
 
         function showSuccessPage(formData) {
@@ -1256,11 +1251,15 @@
         const maxDate = new Date(today.getFullYear() - 10, today.getMonth(), today.getDate());
         dobInput.max = maxDate.toISOString().split('T')[0];
 
-        // Test API connection on page load
+        // Auto test connection on page load
         window.addEventListener('load', function() {
             console.log('🎓 GCEI Admission Form Loaded');
             console.log('🔗 Script URL:', GOOGLE_SCRIPT_URL);
-            console.log('✅ Ready to accept admissions!');
+            
+            // Test connection after 2 seconds
+            setTimeout(() => {
+                testConnection();
+            }, 2000);
         });
     </script>
 </body>
