@@ -781,7 +781,7 @@
     </div>
 
     <script>
-        // ✅ YOUR GOOGLE SCRIPT URL - FIXED VERSION
+        // ✅ YOUR GOOGLE SCRIPT URL
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxZ6c9JjB3gCP1sySbAn1md1jnXLOLmtmggcaFzCb4TflGy_bKWQ7VoRerRTQuRDRRF5g/exec';
 
         // Show status message
@@ -954,21 +954,7 @@
             return re.test(email);
         }
 
-        // File to Base64 converter function
-        function fileToBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => {
-                    // Remove data URL prefix (e.g., "data:image/jpeg;base64,")
-                    const base64 = reader.result.split(',')[1];
-                    resolve(base64);
-                };
-                reader.onerror = error => reject(error);
-            });
-        }
-
-        // ✅ FIXED SUBMISSION FUNCTION - SIMPLIFIED VERSION
+        // ✅ FIXED SUBMISSION FUNCTION - CORS ISSUE SOLVED
         async function submitToGoogleSheets() {
             console.log('=== FORM SUBMISSION STARTED ===');
             document.getElementById('loadingSpinner').style.display = 'block';
@@ -982,7 +968,7 @@
                 const paymentMethod = document.getElementById('upiOption').classList.contains('selected') ? 'UPI' : 'Cash';
                 const transactionId = document.getElementById('transactionId').value;
                 
-                // Prepare submission data (WITHOUT FILES FIRST)
+                // Prepare submission data
                 const submissionData = {
                     timestamp: new Date().toLocaleString('hi-IN'),
                     fullName: formData.fullName,
@@ -1004,13 +990,15 @@
                 console.log('📤 Sending data to Google Sheets:', submissionData);
                 console.log('📮 Google Script URL:', GOOGLE_SCRIPT_URL);
 
-                // ✅ SIMPLE FETCH WITHOUT FILES FIRST
+                // ✅ FIXED: Using FormData to avoid CORS issues
+                const formDataToSend = new FormData();
+                for (const key in submissionData) {
+                    formDataToSend.append(key, submissionData[key]);
+                }
+
                 const response = await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(submissionData)
+                    body: formDataToSend
                 });
 
                 console.log('📥 Response status:', response.status);
@@ -1236,7 +1224,7 @@
             
             const whatsappUrl = `https://wa.me/919244240484?text=${encodeURIComponent(message)}`;
             window.open(whatsappUrl, '_blank');
-        });
+        }
 
         // New Form button functionality
         document.getElementById('newFormBtn').addEventListener('click', function() {
