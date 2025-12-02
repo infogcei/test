@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Guru Computer Education Institute - Admission Form</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- PDF Generation Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root {
@@ -131,13 +132,11 @@
             border: 2px solid #ddd;
             border-radius: 6px;
             font-size: 14px;
-            transition: all 0.3s;
         }
 
         input:focus, textarea:focus, select:focus {
             border-color: var(--secondary-blue);
             outline: none;
-            box-shadow: 0 0 0 3px rgba(42, 77, 142, 0.1);
         }
 
         .file-upload {
@@ -147,7 +146,6 @@
             border-radius: 6px;
             font-size: 14px;
             background: white;
-            cursor: pointer;
         }
 
         .file-upload:hover {
@@ -166,7 +164,6 @@
             border: 1px solid #ddd;
             margin-right: 10px;
             margin-top: 5px;
-            object-fit: cover;
         }
 
         .file-preview div {
@@ -241,15 +238,15 @@
         .submit-btn {
             display: block;
             width: 100%;
-            padding: 15px;
+            padding: 12px;
             background: var(--success);
             color: var(--white);
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            margin-top: 20px;
+            margin-top: 15px;
             transition: all 0.3s ease;
         }
 
@@ -456,7 +453,6 @@
             border-radius: 5px;
             text-align: center;
             font-weight: 600;
-            display: none;
         }
 
         .status-success {
@@ -469,23 +465,6 @@
             background: #fee2e2;
             color: #dc2626;
             border: 1px solid #fecaca;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 4px;
-            background: #e5e7eb;
-            border-radius: 2px;
-            margin: 10px 0;
-            overflow: hidden;
-            display: none;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: var(--success);
-            width: 0%;
-            transition: width 0.3s ease;
         }
 
         @media (max-width: 768px) {
@@ -536,12 +515,8 @@
         }
 
         @media (max-width: 480px) {
-            body {
-                padding: 10px;
-            }
-            
             .container {
-                margin: 0;
+                margin: 10px;
                 border-radius: 10px;
             }
             
@@ -561,10 +536,6 @@
                 margin: 10px 15px;
                 padding: 12px;
             }
-            
-            .success-message {
-                padding: 30px 20px;
-            }
         }
     </style>
 </head>
@@ -572,24 +543,21 @@
     <div class="container">
         <header>
             <div class="institute-name">Guru Computer Education Institute</div>
-            <div class="address">Near Police Station, Dagori Road, Bilha, Bilaspur (C.G.)</div>
-            <div class="contact">Phone: 9244240484 | WhatsApp: 9244240484</div>
+            <!-- ✅ SETUP HERE ✅ - 1. अपना पता बदलें -->
+            <div class="address" id="instituteAddress">Near Police Station, Dagori Road, Bilha, Bilaspur (C.G.)</div>
+            <!-- ✅ SETUP HERE ✅ - 2. अपना मोबाइल नंबर बदलें -->
+            <div class="contact" id="institutePhone">Phone: 9244240484</div>
         </header>
 
         <!-- Welcome Message -->
-        <div class="welcome-message">
+        <div class="welcome-message hindi-text">
             <p><strong>Namaste! Main Vani Hoon, Guru Computer Education Institute, Bilha mein aapka swagat hai.</strong></p>
             <p>Kripya admission form bhar kar submit karen. Form verify hone par hum aapko jald hi contact karenge.</p>
         </div>
 
         <!-- Status Message -->
-        <div class="status-message" id="statusMessage"></div>
+        <div class="status-message" id="statusMessage" style="display: none;"></div>
         
-        <!-- Progress Bar -->
-        <div class="progress-bar" id="progressBar">
-            <div class="progress-fill" id="progressFill"></div>
-        </div>
-
         <!-- Admission Form -->
         <div class="form-container" id="admissionForm">
             <!-- Debug Info -->
@@ -648,12 +616,12 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="aadhar" class="required">Aadhar Number</label>
-                        <input type="text" id="aadhar" name="aadhar" placeholder="Enter 12-digit Aadhar number" pattern="[0-9]{12}" required>
+                        <input type="number" id="aadhar" name="aadhar" placeholder="Enter 12-digit Aadhar number" required min="100000000000" max="999999999999">
                         <small style="color: #666; font-size: 12px;">कृपया 12 अंकों का आधार नंबर दर्ज करें</small>
                     </div>
                     
                     <div class="form-group">
-                        <label for="email">Email (Optional)</label>
+                        <label for="email">Email</label>
                         <input type="email" id="email" name="email" placeholder="Enter email address">
                     </div>
                 </div>
@@ -724,6 +692,7 @@
                         </div>
                     </div>
                     
+                    <!-- ✅ SETUP HERE ✅ - 3. अपना UPI ID बदलें -->
                     <div class="upi-id" id="upiIdDisplay">
                         UPI ID: 8349902843@ybl
                     </div>
@@ -743,14 +712,14 @@
                     <div class="form-group">
                         <label for="photo" class="required">Passport Size Photo</label>
                         <input type="file" id="photo" name="photo" class="file-upload" accept="image/*" required>
-                        <div class="photo-requirements">Max size: 2MB | Formats: JPG, PNG, JPEG</div>
+                        <div class="photo-requirements">Max 5MB, Recommended: Passport size photo (2x2 inches)</div>
                         <div class="file-preview" id="photoPreview"></div>
                     </div>
                     
                     <div class="form-group">
                         <label for="aadharCard" class="required">Aadhar Card</label>
                         <input type="file" id="aadharCard" name="aadharCard" class="file-upload" accept="image/*,.pdf" required>
-                        <div class="photo-requirements">Max size: 5MB | Formats: JPG, PNG, PDF</div>
+                        <div class="photo-requirements">Max 5MB, Image or PDF</div>
                         <div class="file-preview" id="aadharPreview"></div>
                     </div>
                 </div>
@@ -759,7 +728,7 @@
                     <div class="form-group">
                         <label for="marksheet">Marksheet (Last Passing Year) - Optional</label>
                         <input type="file" id="marksheet" name="marksheet" class="file-upload" accept="image/*,.pdf">
-                        <div class="photo-requirements">Max size: 5MB | Formats: JPG, PNG, PDF</div>
+                        <div class="photo-requirements">Max 5MB, Image or PDF (Optional)</div>
                         <div class="file-preview" id="marksheetPreview"></div>
                     </div>
                 </div>
@@ -770,7 +739,7 @@
             </div>
 
             <div class="spinner" id="loadingSpinner"></div>
-            <button type="button" class="submit-btn" id="submitBtn">
+            <button type="submit" class="submit-btn" id="submitBtn">
                 <i class="fas fa-paper-plane"></i> Submit Admission Form
             </button>
         </div>
@@ -804,12 +773,8 @@
                     <div class="info-value" id="successMobile">-</div>
                 </div>
                 <div class="info-row">
-                    <div class="info-label">Documents:</div>
-                    <div class="info-value" id="documentsStatus">Uploaded Successfully</div>
-                </div>
-                <div class="info-row">
                     <div class="info-label">Submission Date:</div>
-                    <div class="info-value" id="submissionDate">-</div>
+                    <div class="info-value" id="submissionDate">Loading...</div>
                 </div>
             </div>
 
@@ -838,6 +803,7 @@
 
             <div class="footer-note">
                 <div class="tagline">Guru Ke Saath Gyan, Safalta Ki Pehchan</div>
+                <!-- ✅ SETUP HERE ✅ - 4. अपना WhatsApp नंबर बदलें (WhatsApp बटन के लिए) -->
                 <strong>Contact: 9244240484 (Vani)</strong><br>
                 <small style="opacity: 0.8; font-weight: normal;">आपकी जानकारी सुरक्षित रूप से हमारे सिस्टम में सेव हो गई है</small>
             </div>
@@ -845,10 +811,14 @@
     </div>
 
     <script>
-        // ✅ CONFIGURATION
+        // ======================================================
+        // ✅ SETUP SECTION - यहाँ आपको अपनी जानकारी डालनी है
+        // ======================================================
+        
+        // ✅ 1. GOOGLE SHEET URL (Google Apps Script Web App URL)
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwxhXGDsH-6XDbQKndY99EwJFYRRc75B0y3REj-u1EI9JN7HskCx3ZCBSO4GcLKHKTTEQ/exec';
         
-        // Institute Details
+        // ✅ 2. INSTITUTE DETAILS (ये HTML में भी सेट हैं, लेकिन यहाँ भी बदल सकते हैं)
         const INSTITUTE_DETAILS = {
             name: 'Guru Computer Education Institute',
             address: 'Near Police Station, Dagori Road, Bilha, Bilaspur (C.G.)',
@@ -858,198 +828,136 @@
             registrationFee: '99'
         };
         
-        // ✅ FILE UPLOAD FUNCTIONS
-        function convertFileToBase64(file) {
-            return new Promise((resolve, reject) => {
-                if (!file) {
-                    resolve('');
+        // File size limits in KB (5MB = 5120KB)
+        const FILE_LIMITS = {
+            photo: 5120, // 5MB
+            aadhar: 5120, // 5MB
+            marksheet: 5120 // 5MB
+        };
+        
+        // ======================================================
+        // END OF SETUP SECTION - यहाँ से आगे कोड एडिट न करें
+        // ======================================================
+        
+        // Update HTML with institute details
+        document.getElementById('instituteAddress').textContent = INSTITUTE_DETAILS.address;
+        document.getElementById('institutePhone').textContent = `Phone: ${INSTITUTE_DETAILS.phone}`;
+        document.getElementById('upiIdDisplay').textContent = `UPI ID: ${INSTITUTE_DETAILS.upiId}`;
+        
+        // Show status message
+        function showStatus(message, type) {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.className = `status-message status-${type}`;
+            statusEl.style.display = 'block';
+            setTimeout(() => {
+                statusEl.style.display = 'none';
+            }, 5000);
+        }
+
+        // Payment method selection
+        document.getElementById('upiOption').addEventListener('click', function() {
+            selectPaymentMethod('upi');
+        });
+
+        document.getElementById('cashOption').addEventListener('click', function() {
+            selectPaymentMethod('cash');
+        });
+
+        function selectPaymentMethod(method) {
+            // Remove selected class from all options
+            document.getElementById('upiOption').classList.remove('selected');
+            document.getElementById('cashOption').classList.remove('selected');
+            
+            // Add selected class to chosen option
+            document.getElementById(method + 'Option').classList.add('selected');
+            
+            // Show UPI ID if UPI selected
+            if (method === 'upi') {
+                document.getElementById('upiIdDisplay').style.display = 'block';
+            } else {
+                document.getElementById('upiIdDisplay').style.display = 'none';
+            }
+        }
+
+        // File validation function
+        function validateFileSize(file, maxSizeKB) {
+            return file.size <= maxSizeKB * 1024;
+        }
+
+        // File preview functionality with size validation
+        document.getElementById('photo').addEventListener('change', function(e) {
+            if (e.target.files[0]) {
+                if (!validateFileSize(e.target.files[0], FILE_LIMITS.photo)) {
+                    alert(`Photo size should be less than ${FILE_LIMITS.photo/1024}MB`);
+                    e.target.value = '';
                     return;
                 }
-                
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => {
-                    console.log(`File ${file.name} converted to base64, size: ${reader.result.length} chars`);
-                    resolve(reader.result);
-                };
-                reader.onerror = error => reject(error);
-            });
-        }
-        
-        function validateFileSize(file, maxSizeMB) {
-            if (!file) return true;
-            const sizeInMB = file.size / (1024 * 1024);
-            return sizeInMB <= maxSizeMB;
-        }
-        
+            }
+            previewFile(e.target, 'photoPreview');
+        });
+
+        document.getElementById('aadharCard').addEventListener('change', function(e) {
+            if (e.target.files[0]) {
+                if (!validateFileSize(e.target.files[0], FILE_LIMITS.aadhar)) {
+                    alert(`Aadhar file size should be less than ${FILE_LIMITS.aadhar/1024}MB`);
+                    e.target.value = '';
+                    return;
+                }
+            }
+            previewFile(e.target, 'aadharPreview');
+        });
+
+        document.getElementById('marksheet').addEventListener('change', function(e) {
+            if (e.target.files[0]) {
+                if (!validateFileSize(e.target.files[0], FILE_LIMITS.marksheet)) {
+                    alert(`Marksheet file size should be less than ${FILE_LIMITS.marksheet/1024}MB`);
+                    e.target.value = '';
+                    return;
+                }
+            }
+            previewFile(e.target, 'marksheetPreview');
+        });
+
         function previewFile(input, previewId) {
             const preview = document.getElementById(previewId);
             preview.innerHTML = '';
             
             if (input.files && input.files[0]) {
                 const file = input.files[0];
-                const fileSize = (file.size / (1024 * 1024)).toFixed(2);
-                
                 if (file.type.startsWith('image/')) {
                     const reader = new FileReader();
                     reader.onload = function(e) {
                         const img = document.createElement('img');
                         img.src = e.target.result;
-                        img.style.maxWidth = '150px';
-                        img.style.maxHeight = '150px';
                         preview.appendChild(img);
                         
+                        // Show file size
+                        const fileSizeKB = (file.size / 1024).toFixed(2);
+                        const fileSizeMB = (file.size / (1024*1024)).toFixed(2);
                         const sizeInfo = document.createElement('div');
-                        sizeInfo.innerHTML = `<strong>${file.name}</strong><br>Size: ${fileSize} MB`;
+                        sizeInfo.innerHTML = `File: ${file.name} (${fileSizeKB} KB / ${fileSizeMB} MB)`;
                         preview.appendChild(sizeInfo);
-                    };
+                    }
                     reader.readAsDataURL(file);
                 } else {
-                    preview.innerHTML = `
-                        <div style="padding: 10px; background: #f8f9fa; border-radius: 5px;">
-                            <i class="fas fa-file-pdf" style="font-size: 40px; color: #e74c3c; margin-bottom: 10px;"></i><br>
-                            <strong>${file.name}</strong><br>
-                            Size: ${fileSize} MB<br>
-                            Type: ${file.type || 'PDF Document'}
-                        </div>
-                    `;
+                    const fileSizeKB = (file.size / 1024).toFixed(2);
+                    const fileSizeMB = (file.size / (1024*1024)).toFixed(2);
+                    preview.innerHTML = `<div>File: ${file.name} (${fileSizeKB} KB / ${fileSizeMB} MB) - PDF</div>`;
                 }
             }
         }
-        
-        // ✅ FORM VALIDATION FUNCTIONS
-        function showStatus(message, type = 'success') {
-            const statusEl = document.getElementById('statusMessage');
-            statusEl.textContent = message;
-            statusEl.className = `status-message status-${type}`;
-            statusEl.style.display = 'block';
+
+        function validateDOB(dob) {
+            if (!dob) return true; // Optional field
             
-            if (type === 'error') {
-                setTimeout(() => {
-                    statusEl.style.display = 'none';
-                }, 5000);
-            }
+            const birthDate = new Date(dob);
+            const today = new Date();
+            const age = today.getFullYear() - birthDate.getFullYear();
+            
+            return age >= 10; // Minimum 10 years
         }
-        
-        function validateForm() {
-            console.log('Validating form...');
-            
-            // Required fields
-            const requiredFields = [
-                {id: 'fullName', name: 'Full Name'},
-                {id: 'mobile', name: 'Mobile Number'},
-                {id: 'whatsapp', name: 'WhatsApp Number'},
-                {id: 'gender', name: 'Gender'},
-                {id: 'address', name: 'Address'},
-                {id: 'aadhar', name: 'Aadhar Number'},
-                {id: 'course', name: 'Course'},
-                {id: 'batchTime', name: 'Batch Time'}
-            ];
-            
-            let isValid = true;
-            let errorMessages = [];
-            
-            // Check required fields
-            for (const field of requiredFields) {
-                const element = document.getElementById(field.id);
-                const value = element.value.trim();
-                
-                if (!value) {
-                    element.style.borderColor = '#dc2626';
-                    errorMessages.push(`${field.name} is required`);
-                    isValid = false;
-                } else {
-                    element.style.borderColor = '#ddd';
-                }
-            }
-            
-            // Validate Aadhar (12 digits)
-            const aadhar = document.getElementById('aadhar').value.trim();
-            if (aadhar && !/^\d{12}$/.test(aadhar)) {
-                document.getElementById('aadhar').style.borderColor = '#dc2626';
-                errorMessages.push('Aadhar must be exactly 12 digits');
-                isValid = false;
-            }
-            
-            // Validate mobile numbers (10 digits)
-            const mobile = document.getElementById('mobile').value.trim();
-            if (mobile && !/^\d{10}$/.test(mobile)) {
-                document.getElementById('mobile').style.borderColor = '#dc2626';
-                errorMessages.push('Mobile must be 10 digits');
-                isValid = false;
-            }
-            
-            const whatsapp = document.getElementById('whatsapp').value.trim();
-            if (whatsapp && !/^\d{10}$/.test(whatsapp)) {
-                document.getElementById('whatsapp').style.borderColor = '#dc2626';
-                errorMessages.push('WhatsApp must be 10 digits');
-                isValid = false;
-            }
-            
-            // Validate email if provided
-            const email = document.getElementById('email').value.trim();
-            if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                document.getElementById('email').style.borderColor = '#dc2626';
-                errorMessages.push('Please enter a valid email address');
-                isValid = false;
-            }
-            
-            // Validate files
-            const photoFile = document.getElementById('photo').files[0];
-            const aadharFile = document.getElementById('aadharCard').files[0];
-            
-            if (!photoFile) {
-                document.getElementById('photo').style.borderColor = '#dc2626';
-                errorMessages.push('Passport photo is required');
-                isValid = false;
-            } else if (!validateFileSize(photoFile, 2)) {
-                document.getElementById('photo').style.borderColor = '#dc2626';
-                errorMessages.push('Photo size must be less than 2MB');
-                isValid = false;
-            }
-            
-            if (!aadharFile) {
-                document.getElementById('aadharCard').style.borderColor = '#dc2626';
-                errorMessages.push('Aadhar card is required');
-                isValid = false;
-            } else if (!validateFileSize(aadharFile, 5)) {
-                document.getElementById('aadharCard').style.borderColor = '#dc2626';
-                errorMessages.push('Aadhar file size must be less than 5MB');
-                isValid = false;
-            }
-            
-            // Validate marksheet if uploaded
-            const marksheetFile = document.getElementById('marksheet').files[0];
-            if (marksheetFile && !validateFileSize(marksheetFile, 5)) {
-                document.getElementById('marksheet').style.borderColor = '#dc2626';
-                errorMessages.push('Marksheet size must be less than 5MB');
-                isValid = false;
-            }
-            
-            // Validate payment method
-            const paymentMethod = getSelectedPaymentMethod();
-            if (!paymentMethod) {
-                errorMessages.push('Please select a payment method');
-                isValid = false;
-            }
-            
-            if (paymentMethod === 'UPI') {
-                const transactionId = document.getElementById('transactionId').value.trim();
-                if (!transactionId) {
-                    if (!confirm('You selected UPI payment but no Transaction ID provided. Do you want to continue?')) {
-                        isValid = false;
-                    }
-                }
-            }
-            
-            if (!isValid && errorMessages.length > 0) {
-                showStatus(errorMessages.join(', '), 'error');
-            }
-            
-            return isValid;
-        }
-        
-        // ✅ PAYMENT METHODS
+
         function getSelectedPaymentMethod() {
             if (document.getElementById('upiOption').classList.contains('selected')) {
                 return 'UPI';
@@ -1058,355 +966,450 @@
             }
             return null;
         }
-        
-        // ✅ LOADING STATE
+
+        document.getElementById('submitBtn').addEventListener('click', async function(e) {
+            e.preventDefault();
+            
+            if (!validateForm()) {
+                return;
+            }
+
+            await submitForm();
+        });
+
+        function validateForm() {
+            const requiredFields = ['fullName', 'mobile', 'whatsapp', 'course', 'batchTime', 'address', 'aadhar', 'gender'];
+            let isValid = true;
+            
+            // Reset all borders
+            document.querySelectorAll('input, select, textarea').forEach(el => {
+                el.style.borderColor = '#ddd';
+            });
+            
+            // Check required fields
+            for (let field of requiredFields) {
+                const element = document.getElementById(field);
+                if (!element.value.trim()) {
+                    isValid = false;
+                    element.style.borderColor = 'red';
+                    element.focus();
+                }
+            }
+
+            // Aadhar validation - exactly 12 digits
+            const aadhar = document.getElementById('aadhar').value;
+            if (aadhar.length !== 12 || !/^\d{12}$/.test(aadhar)) {
+                alert('कृपया 12 अंकों का सही आधार नंबर दर्ज करें (केवल अंक)');
+                document.getElementById('aadhar').style.borderColor = 'red';
+                document.getElementById('aadhar').focus();
+                return false;
+            }
+
+            // Email validation if provided
+            const email = document.getElementById('email').value;
+            if (email && !validateEmail(email)) {
+                alert('कृपया सही ईमेल आईडी दर्ज करें (example@gmail.com)');
+                document.getElementById('email').style.borderColor = 'red';
+                document.getElementById('email').focus();
+                return false;
+            }
+
+            // DOB validation
+            const dob = document.getElementById('dob').value;
+            if (dob && !validateDOB(dob)) {
+                alert('कृपया सही जन्म तिथि दर्ज करें (न्यूनतम आयु 10 वर्ष)');
+                document.getElementById('dob').style.borderColor = 'red';
+                document.getElementById('dob').focus();
+                return false;
+            }
+
+            // Mobile and WhatsApp validation
+            const mobile = document.getElementById('mobile').value;
+            const whatsapp = document.getElementById('whatsapp').value;
+            
+            if (!/^\d{10}$/.test(mobile)) {
+                alert('कृपया 10 अंकों का मोबाइल नंबर दर्ज करें।');
+                document.getElementById('mobile').style.borderColor = 'red';
+                document.getElementById('mobile').focus();
+                return false;
+            }
+            
+            if (!/^\d{10}$/.test(whatsapp)) {
+                alert('कृपया 10 अंकों का WhatsApp नंबर दर्ज करें।');
+                document.getElementById('whatsapp').style.borderColor = 'red';
+                document.getElementById('whatsapp').focus();
+                return false;
+            }
+
+            // File validation
+            const photoFile = document.getElementById('photo');
+            const aadharFile = document.getElementById('aadharCard');
+            
+            if (photoFile.files.length === 0) {
+                alert('कृपया पासपोर्ट साइज फोटो अपलोड करें');
+                photoFile.style.borderColor = 'red';
+                photoFile.focus();
+                return false;
+            }
+            
+            if (aadharFile.files.length === 0) {
+                alert('कृपया आधार कार्ड अपलोड करें');
+                aadharFile.style.borderColor = 'red';
+                aadharFile.focus();
+                return false;
+            }
+
+            // File size validation
+            if (photoFile.files[0] && !validateFileSize(photoFile.files[0], FILE_LIMITS.photo)) {
+                alert(`फोटो की साइज ${FILE_LIMITS.photo/1024}MB से कम होनी चाहिए`);
+                photoFile.style.borderColor = 'red';
+                return false;
+            }
+            
+            if (aadharFile.files[0] && !validateFileSize(aadharFile.files[0], FILE_LIMITS.aadhar)) {
+                alert(`आधार कार्ड की साइज ${FILE_LIMITS.aadhar/1024}MB से कम होनी चाहिए`);
+                aadharFile.style.borderColor = 'red';
+                return false;
+            }
+            
+            // Marksheet file size validation (optional)
+            const marksheetFile = document.getElementById('marksheet');
+            if (marksheetFile.files[0] && !validateFileSize(marksheetFile.files[0], FILE_LIMITS.marksheet)) {
+                alert(`मार्कशीट की साइज ${FILE_LIMITS.marksheet/1024}MB से कम होनी चाहिए`);
+                marksheetFile.style.borderColor = 'red';
+                return false;
+            }
+
+            // Payment method validation
+            const paymentMethod = getSelectedPaymentMethod();
+            if (!paymentMethod) {
+                alert('कृपया भुगतान का तरीका चुनें');
+                return false;
+            }
+
+            // UPI selected but no transaction ID
+            if (paymentMethod === 'UPI' && !document.getElementById('transactionId').value.trim()) {
+                if (!confirm('क्या आपने UPI payment कर दी है? अगर हाँ, तो Transaction ID दर्ज करें। नहीं तो Cancel करें और Payment करें।')) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+
         function setLoadingState(isLoading) {
             const spinner = document.getElementById('loadingSpinner');
             const submitBtn = document.getElementById('submitBtn');
-            const progressBar = document.getElementById('progressBar');
             
             if (isLoading) {
                 spinner.style.display = 'block';
                 submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-                progressBar.style.display = 'block';
-                updateProgress(10);
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
             } else {
                 spinner.style.display = 'none';
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Admission Form';
-                progressBar.style.display = 'none';
             }
         }
-        
-        function updateProgress(percent) {
-            const progressFill = document.getElementById('progressFill');
-            progressFill.style.width = percent + '%';
-        }
-        
-        // ✅ FORM SUBMISSION
+
+        // ✅ FORM SUBMISSION FUNCTION
         async function submitForm() {
-            console.log('Starting form submission...');
-            
-            if (!validateForm()) {
-                console.log('Form validation failed');
-                return;
-            }
+            console.log('=== FORM SUBMISSION STARTED ===');
+            console.log('📮 Google Script URL:', GOOGLE_SCRIPT_URL);
             
             setLoadingState(true);
-            updateProgress(20);
-            
+
             try {
-                // Get all form data
-                const formData = {
-                    // Student details
-                    fullName: document.getElementById('fullName').value.trim(),
-                    fatherName: document.getElementById('fatherName').value.trim(),
-                    mobile: document.getElementById('mobile').value.trim(),
-                    whatsapp: document.getElementById('whatsapp').value.trim(),
-                    gender: document.getElementById('gender').value,
-                    dob: document.getElementById('dob').value,
-                    address: document.getElementById('address').value.trim(),
-                    aadhar: document.getElementById('aadhar').value.trim(),
-                    email: document.getElementById('email').value.trim(),
-                    
-                    // Course details
-                    course: document.getElementById('course').value,
-                    batchTime: document.getElementById('batchTime').value,
-                    
-                    // Payment details
-                    paymentMethod: getSelectedPaymentMethod(),
-                    transactionId: document.getElementById('transactionId').value.trim(),
-                    registrationFee: INSTITUTE_DETAILS.registrationFee,
-                    
-                    // Timestamp
+                const formData = getFormData();
+                
+                // Get payment method
+                const paymentMethod = getSelectedPaymentMethod();
+                const transactionId = document.getElementById('transactionId').value;
+                
+                // Prepare submission data
+                const submissionData = {
                     timestamp: new Date().toLocaleString('hi-IN'),
-                    instituteName: INSTITUTE_DETAILS.name
+                    fullName: formData.fullName,
+                    fatherName: formData.fatherName,
+                    mobile: formData.mobile,
+                    whatsapp: formData.whatsapp,
+                    gender: formData.gender,
+                    dob: formData.dob,
+                    address: formData.address,
+                    aadhar: formData.aadhar,
+                    email: formData.email,
+                    course: formData.course,
+                    batchTime: formData.batchTime,
+                    paymentMethod: paymentMethod,
+                    transactionId: transactionId,
+                    registrationFee: INSTITUTE_DETAILS.registrationFee,
+                    instituteName: INSTITUTE_DETAILS.name,
+                    action: 'submitAdmission'
                 };
-                
-                updateProgress(40);
-                
-                // Convert files to base64
+
+                console.log('📤 Sending data to Google Sheets:', submissionData);
+
+                // Using FormData to send
+                const formDataToSend = new FormData();
+                for (const key in submissionData) {
+                    formDataToSend.append(key, submissionData[key]);
+                }
+
+                // Add files if you want to upload them
                 const photoFile = document.getElementById('photo').files[0];
                 const aadharFile = document.getElementById('aadharCard').files[0];
                 const marksheetFile = document.getElementById('marksheet').files[0];
                 
-                console.log('Converting files to base64...');
-                
-                const [photoBase64, aadharBase64, marksheetBase64] = await Promise.all([
-                    convertFileToBase64(photoFile),
-                    convertFileToBase64(aadharFile),
-                    convertFileToBase64(marksheetFile)
-                ]);
-                
-                updateProgress(70);
-                
-                // Add files to form data
-                formData.photoFile = photoBase64;
-                formData.aadharFile = aadharBase64;
-                formData.marksheetFile = marksheetBase64;
-                
-                console.log('Form data prepared:', {
-                    ...formData,
-                    photoFile: photoBase64 ? `Base64 (${photoBase64.length} chars)` : 'Empty',
-                    aadharFile: aadharBase64 ? `Base64 (${aadharBase64.length} chars)` : 'Empty',
-                    marksheetFile: marksheetBase64 ? `Base64 (${marksheetBase64.length} chars)` : 'Empty'
-                });
-                
-                // Send to Google Apps Script
-                updateProgress(80);
-                console.log('Sending to Google Script:', GOOGLE_SCRIPT_URL);
-                
+                if (photoFile) formDataToSend.append('photoFile', photoFile);
+                if (aadharFile) formDataToSend.append('aadharFile', aadharFile);
+                if (marksheetFile) formDataToSend.append('marksheetFile', marksheetFile);
+
                 const response = await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
-                    mode: 'no-cors',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(formData)
+                    body: formDataToSend
                 });
-                
-                updateProgress(100);
-                
-                // Simulate successful submission (since we can't read response with no-cors)
-                setTimeout(() => {
-                    showSuccessPage(formData);
-                    showStatus('Form submitted successfully!', 'success');
-                }, 1500);
-                
+
+                console.log('📥 Response status:', response.status);
+
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+
+                const resultText = await response.text();
+                console.log('📥 Raw response:', resultText);
+
+                let result;
+                try {
+                    result = JSON.parse(resultText);
+                } catch (e) {
+                    console.warn('JSON parse failed, using text response');
+                    result = { status: 'success', message: resultText };
+                }
+
+                console.log('📥 Parsed response:', result);
+
+                if (result.status === 'success') {
+                    console.log('✅ Form submitted successfully');
+                    showSuccessPage({
+                        studentId: result.studentId || generateStudentId(),
+                        fullName: submissionData.fullName,
+                        course: submissionData.course,
+                        batchTime: submissionData.batchTime,
+                        mobile: submissionData.mobile,
+                        timestamp: submissionData.timestamp
+                    });
+                    showStatus('✅ फॉर्म सफलतापूर्वक सबमिट हो गया!', 'success');
+                } else {
+                    throw new Error(result.message || 'Submission failed');
+                }
+
             } catch (error) {
-                console.error('Form submission error:', error);
-                showStatus('Error submitting form: ' + error.message, 'error');
+                console.error('❌ FORM SUBMISSION FAILED:', error);
+                
+                // Simple error display without fallback to localStorage
+                showStatus(`❌ Error: ${error.message}. कृपया बाद में पुनः प्रयास करें।`, 'error');
+                
+                // Show connection test option
+                document.getElementById('debugInfo').style.display = 'block';
+                document.getElementById('debugInfo').innerHTML = `
+                    <strong>Error Details:</strong><br>
+                    <strong>Message:</strong> ${error.message}<br>
+                    <strong>Time:</strong> ${new Date().toLocaleString()}<br>
+                    <strong>Script URL:</strong> ${GOOGLE_SCRIPT_URL}<br>
+                    <button onclick="testConnection()" style="padding: 8px 15px; background: #007cba; color: white; border: none; border-radius: 5px; cursor: pointer; margin: 5px;">Test Connection</button>
+                    <button onclick="retrySubmission()" style="padding: 8px 15px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; margin: 5px;">Retry Submission</button>
+                `;
+                
+            } finally {
                 setLoadingState(false);
             }
         }
-        
-        // ✅ SUCCESS PAGE
-        function showSuccessPage(formData) {
-            console.log('Showing success page...');
-            
-            // Generate student ID
+
+        // Generate student ID
+        function generateStudentId() {
             const currentYear = new Date().getFullYear();
-            const randomNum = Math.floor(Math.random() * 9000) + 1000;
-            const studentId = `GCEI-${currentYear}-${randomNum}`;
-            
-            // Hide form, show success message
+            const randomNum = Math.floor(Math.random() * 10000);
+            return `GCEI-${currentYear}-${randomNum}`;
+        }
+
+        function showSuccessPage(formData) {
             document.getElementById('admissionForm').style.display = 'none';
             document.getElementById('successMessage').style.display = 'block';
             
-            // Update student info
-            document.getElementById('studentIdDisplay').textContent = `Student ID: ${studentId}`;
+            document.getElementById('studentIdDisplay').textContent = `Your Student ID: ${formData.studentId}`;
             document.getElementById('successFullName').textContent = formData.fullName;
             document.getElementById('successCourse').textContent = formData.course;
             document.getElementById('successBatchTime').textContent = formData.batchTime;
             document.getElementById('successMobile').textContent = formData.mobile;
             document.getElementById('submissionDate').textContent = formData.timestamp;
             
-            // Update documents status
-            const hasPhoto = document.getElementById('photo').files[0];
-            const hasAadhar = document.getElementById('aadharCard').files[0];
-            const hasMarksheet = document.getElementById('marksheet').files[0];
+            window.scrollTo(0, 0);
             
-            let docsText = [];
-            if (hasPhoto) docsText.push('Photo ✓');
-            if (hasAadhar) docsText.push('Aadhar ✓');
-            if (hasMarksheet) docsText.push('Marksheet ✓');
-            document.getElementById('documentsStatus').textContent = docsText.join(', ');
-            
-            // Scroll to top
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            
-            setLoadingState(false);
+            // Animation
+            setTimeout(() => {
+                document.querySelector('.success-icon').style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    document.querySelector('.success-icon').style.transform = 'scale(1)';
+                }, 300);
+            }, 1000);
         }
-        
-        // ✅ EVENT LISTENERS
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM loaded, setting up event listeners...');
-            
-            // Payment method selection
-            document.getElementById('upiOption').addEventListener('click', function() {
-                document.getElementById('upiOption').classList.add('selected');
-                document.getElementById('cashOption').classList.remove('selected');
-                document.getElementById('upiIdDisplay').style.display = 'block';
-            });
-            
-            document.getElementById('cashOption').addEventListener('click', function() {
-                document.getElementById('cashOption').classList.add('selected');
-                document.getElementById('upiOption').classList.remove('selected');
-                document.getElementById('upiIdDisplay').style.display = 'none';
-            });
-            
-            // File preview
-            document.getElementById('photo').addEventListener('change', function(e) {
-                previewFile(e.target, 'photoPreview');
-            });
-            
-            document.getElementById('aadharCard').addEventListener('change', function(e) {
-                previewFile(e.target, 'aadharPreview');
-            });
-            
-            document.getElementById('marksheet').addEventListener('change', function(e) {
-                previewFile(e.target, 'marksheetPreview');
-            });
-            
-            // Form submission
-            document.getElementById('submitBtn').addEventListener('click', async function(e) {
-                e.preventDefault();
-                await submitForm();
-            });
-            
-            // Success page buttons
-            document.getElementById('downloadPdfBtn').addEventListener('click', function() {
-                generatePDF();
-            });
-            
-            document.getElementById('whatsappBtn').addEventListener('click', function() {
-                shareViaWhatsApp();
-            });
-            
-            document.getElementById('newFormBtn').addEventListener('click', function() {
-                if (confirm('क्या आप नया फॉर्म भरना चाहते हैं?')) {
-                    location.reload();
-                }
-            });
-            
-            // Set max date for DOB (minimum age 10 years)
-            const dobInput = document.getElementById('dob');
-            const today = new Date();
-            const maxDate = new Date(today.getFullYear() - 10, today.getMonth(), today.getDate());
-            dobInput.max = maxDate.toISOString().split('T')[0];
-            
-            // Set min date (reasonable, e.g., 1900)
-            dobInput.min = '1900-01-01';
-            
-            console.log('Event listeners setup complete');
-        });
-        
-        // ✅ PDF GENERATION
-        function generatePDF() {
-            try {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
-                
-                const studentId = document.getElementById('studentIdDisplay').textContent.replace('Student ID: ', '');
-                const studentName = document.getElementById('successFullName').textContent;
-                const course = document.getElementById('successCourse').textContent;
-                const batchTime = document.getElementById('successBatchTime').textContent;
-                const mobile = document.getElementById('successMobile').textContent;
-                const submissionDate = document.getElementById('submissionDate').textContent;
-                
-                // Header
-                doc.setFont("helvetica", "bold");
-                doc.setFontSize(20);
-                doc.setTextColor(26, 42, 108);
-                doc.text("Guru Computer Education Institute", 105, 20, { align: "center" });
-                
-                doc.setFontSize(12);
-                doc.setTextColor(0, 0, 0);
-                doc.setFont("helvetica", "normal");
-                doc.text(INSTITUTE_DETAILS.address, 105, 28, { align: "center" });
-                doc.text(`Phone: ${INSTITUTE_DETAILS.phone} | WhatsApp: ${INSTITUTE_DETAILS.whatsapp}`, 105, 34, { align: "center" });
-                
-                // Title
-                doc.setFontSize(18);
-                doc.setFont("helvetica", "bold");
-                doc.setTextColor(26, 42, 108);
-                doc.text("ADMISSION FORM RECEIPT", 105, 50, { align: "center" });
-                
-                // Student Information
-                doc.setFontSize(12);
-                doc.setFont("helvetica", "bold");
-                doc.text("Student ID:", 20, 70);
-                doc.text("Student Name:", 20, 80);
-                doc.text("Course:", 20, 90);
-                doc.text("Batch Time:", 20, 100);
-                doc.text("Mobile Number:", 20, 110);
-                doc.text("Submission Date:", 20, 120);
-                doc.text("Registration Fee:", 20, 130);
-                
-                doc.setFont("helvetica", "normal");
-                doc.text(studentId, 70, 70);
-                doc.text(studentName, 70, 80);
-                doc.text(course, 70, 90);
-                doc.text(batchTime, 70, 100);
-                doc.text(mobile, 70, 110);
-                doc.text(submissionDate, 70, 120);
-                doc.text("₹" + INSTITUTE_DETAILS.registrationFee, 70, 130);
-                
-                // Instructions
-                doc.setFontSize(11);
-                doc.setFont("helvetica", "bold");
-                doc.text("Next Steps:", 20, 150);
-                
-                doc.setFont("helvetica", "normal");
-                doc.setFontSize(10);
-                doc.text("1. Pay ₹99 registration fee (UPI or at institute)", 20, 160);
-                doc.text("2. Our team will contact you within 24 hours", 20, 170);
-                doc.text("3. Bring original documents to institute", 20, 180);
-                doc.text("4. Complete admission process and fee payment", 20, 190);
-                doc.text("5. Confirm batch start date with institute", 20, 200);
-                
-                // Footer
-                doc.setFontSize(12);
-                doc.setFont("helvetica", "bold");
-                doc.text("Guru Ke Saath Gyan, Safalta Ki Pehchan", 105, 230, { align: "center" });
-                
-                // Save PDF
-                doc.save(`GCEI_Admission_${studentId}.pdf`);
-                
-                showStatus('PDF downloaded successfully!', 'success');
-                
-            } catch (error) {
-                console.error('PDF generation error:', error);
-                showStatus('Error generating PDF', 'error');
-            }
+
+        function getFormData() {
+            return {
+                fullName: document.getElementById('fullName').value,
+                fatherName: document.getElementById('fatherName').value,
+                mobile: document.getElementById('mobile').value,
+                whatsapp: document.getElementById('whatsapp').value,
+                gender: document.getElementById('gender').value,
+                dob: document.getElementById('dob').value,
+                address: document.getElementById('address').value,
+                aadhar: document.getElementById('aadhar').value,
+                email: document.getElementById('email').value,
+                course: document.getElementById('course').value,
+                batchTime: document.getElementById('batchTime').value
+            };
         }
-        
-        // ✅ WHATSAPP SHARE
-        function shareViaWhatsApp() {
-            const studentName = document.getElementById('successFullName').textContent;
-            const studentId = document.getElementById('studentIdDisplay').textContent.replace('Student ID: ', '');
-            const course = document.getElementById('successCourse').textContent;
-            const batchTime = document.getElementById('successBatchTime').textContent;
-            
-            const message = `नमस्ते! मैं ${studentName} हूँ। मैंने गुरु कंप्यूटर एजुकेशन इंस्टीट्यूट में ${course} कोर्स के लिए एडमिशन फॉर्म सबमिट किया है।\n\nविवरण:\n• छात्र ID: ${studentId}\n• कोर्स: ${course}\n• बैच समय: ${batchTime}\n• संपर्क: ${INSTITUTE_DETAILS.phone}\n\nकृपया मेरा एडमिशन प्रक्रिया पूरी करने में सहायता करें।`;
-            
-            const encodedMessage = encodeURIComponent(message);
-            const whatsappUrl = `https://wa.me/91${INSTITUTE_DETAILS.whatsapp}?text=${encodedMessage}`;
-            
-            window.open(whatsappUrl, '_blank');
-        }
-        
-        // ✅ TEST CONNECTION (optional)
+
+        // ✅ TEST CONNECTION FUNCTION
         async function testConnection() {
             try {
-                const testUrl = GOOGLE_SCRIPT_URL + '?test=true';
-                const response = await fetch(testUrl);
-                const data = await response.text();
-                console.log('Connection test response:', data);
-                return true;
+                console.log('🔗 Testing connection to:', GOOGLE_SCRIPT_URL);
+                const response = await fetch(GOOGLE_SCRIPT_URL + '?test=true');
+                const result = await response.text();
+                
+                document.getElementById('debugInfo').innerHTML += `<br><br><strong>Connection Test Result:</strong><br>${result}`;
+                console.log('Connection test result:', result);
             } catch (error) {
+                document.getElementById('debugInfo').innerHTML += `<br><br><strong>Connection Test Failed:</strong><br>${error.message}`;
                 console.error('Connection test failed:', error);
-                return false;
             }
         }
-        
-        // Initialize
+
+        // ✅ RETRY SUBMISSION
+        async function retrySubmission() {
+            document.getElementById('debugInfo').style.display = 'none';
+            await submitForm();
+        }
+
+        // PDF Download
+        document.getElementById('downloadPdfBtn').addEventListener('click', function() {
+            generateAndDownloadPDF();
+        });
+
+        function generateAndDownloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            const studentName = document.getElementById('successFullName').textContent;
+            const studentId = document.getElementById('studentIdDisplay').textContent.replace('Your Student ID: ', '');
+            const course = document.getElementById('successCourse').textContent;
+            const batchTime = document.getElementById('successBatchTime').textContent;
+            const mobile = document.getElementById('successMobile').textContent;
+            const submissionDate = document.getElementById('submissionDate').textContent;
+            
+            // Set font and colors
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(20);
+            doc.setTextColor(26, 42, 108);
+            
+            // Institute Name
+            doc.text(INSTITUTE_DETAILS.name, 105, 20, { align: "center" });
+            
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0);
+            doc.setFont("helvetica", "normal");
+            doc.text(INSTITUTE_DETAILS.address, 105, 28, { align: "center" });
+            doc.text(`Phone: ${INSTITUTE_DETAILS.phone}`, 105, 34, { align: "center" });
+            
+            // Title
+            doc.setFontSize(18);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(26, 42, 108);
+            doc.text("ADMISSION FORM RECEIPT", 105, 50, { align: "center" });
+            
+            // Student Information
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "bold");
+            doc.text("Student ID:", 20, 70);
+            doc.text("Full Name:", 20, 80);
+            doc.text("Course:", 20, 90);
+            doc.text("Batch Time:", 20, 100);
+            doc.text("Mobile:", 20, 110);
+            doc.text("Submission Date:", 20, 120);
+            
+            doc.setFont("helvetica", "normal");
+            doc.text(studentId, 70, 70);
+            doc.text(studentName, 70, 80);
+            doc.text(course, 70, 90);
+            doc.text(batchTime, 70, 100);
+            doc.text(mobile, 70, 110);
+            doc.text(submissionDate, 70, 120);
+            
+            // Payment Information
+            doc.setFont("helvetica", "bold");
+            doc.text(`Registration Fee: ₹${INSTITUTE_DETAILS.registrationFee}`, 20, 140);
+            
+            // Instructions
+            doc.setFontSize(10);
+            doc.text("Next Steps:", 20, 160);
+            doc.text(`1. Pay ₹${INSTITUTE_DETAILS.registrationFee} registration fee (UPI or at institute)`, 20, 170);
+            doc.text("2. Our team will contact you within 24 hours", 20, 180);
+            doc.text("3. Bring original documents to institute", 20, 190);
+            doc.text("4. Complete admission process", 20, 200);
+            doc.text("5. Confirm batch start date", 20, 210);
+            
+            // Footer
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "bold");
+            doc.text("Guru Ke Saath Gyan, Safalta Ki Pehchan", 105, 240, { align: "center" });
+            
+            // Save the PDF
+            doc.save(`${INSTITUTE_DETAILS.name.replace(/\s+/g, '_')}_Admission_${studentId}.pdf`);
+        }
+
+        // WhatsApp button functionality
+        document.getElementById('whatsappBtn').addEventListener('click', function() {
+            const studentName = document.getElementById('successFullName').textContent;
+            const studentId = document.getElementById('studentIdDisplay').textContent.replace('Your Student ID: ', '');
+            const course = document.getElementById('successCourse').textContent;
+            const batchTime = document.getElementById('successBatchTime').textContent;
+            const mobile = document.getElementById('successMobile').textContent;
+            
+            const message = `Namaste! Main ${studentName} hun. Maine ${INSTITUTE_DETAILS.name} mein ${course} ke liye admission form submit kiya hai.\n\nStudent Details:\n- Student ID: ${studentId}\n- Name: ${studentName}\n- Course: ${course}\n- Batch: ${batchTime}\n- Mobile: ${mobile}\n\nKripya meri admission process complete karne mein madad karein.`;
+            
+            const whatsappUrl = `https://wa.me/91${INSTITUTE_DETAILS.whatsapp}?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+        });
+
+        // New Form button functionality
+        document.getElementById('newFormBtn').addEventListener('click', function() {
+            if(confirm('क्या आप एक नया एडमिशन फॉर्म भरना चाहते हैं?')) {
+                location.reload();
+            }
+        });
+
+        // Set maximum date for DOB (minimum age 10 years)
+        const dobInput = document.getElementById('dob');
+        const today = new Date();
+        const maxDate = new Date(today.getFullYear() - 10, today.getMonth(), today.getDate());
+        dobInput.max = maxDate.toISOString().split('T')[0];
+
+        // Auto test connection on page load
         window.addEventListener('load', function() {
-            console.log('Guru Computer Education Institute Admission Form Loaded');
-            console.log('Google Script URL:', GOOGLE_SCRIPT_URL);
+            console.log('🎓 GCEI Admission Form Loaded');
+            console.log('🔗 Script URL:', GOOGLE_SCRIPT_URL);
+            console.log('🏢 Institute:', INSTITUTE_DETAILS.name);
+            console.log('📁 File Limits:', FILE_LIMITS);
             
-            // Auto-select cash payment by default
-            document.getElementById('cashOption').click();
-            
-            // Test connection (optional)
-            // testConnection().then(success => {
-            //     if (success) {
-            //         console.log('Connection test passed');
-            //     } else {
-            //         console.log('Connection test failed - check URL');
-            //     }
-            // });
+            // Test connection after 2 seconds
+            setTimeout(() => {
+                testConnection();
+            }, 2000);
         });
     </script>
 </body>
